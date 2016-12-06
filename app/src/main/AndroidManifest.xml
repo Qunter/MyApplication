@@ -15,6 +15,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".password.ui.NumPaswSetActivity">
+        </activity>
+        <activity android:name=".password.ui.DrawPaswSetActivity">
+        </activity>
     </application>
 
 </manifest>
