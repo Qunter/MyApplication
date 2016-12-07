@@ -11,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.administrator.myapplication.R;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -404,7 +406,7 @@ public class LocusPassWordView extends View {
 				// mCompleteListener.onPasswordTooMin(sPoints.size());
 				error();
 				clearPassword();
-				Toast.makeText(this.getContext(), "password too short or too long, cannot be saved!",
+				Toast.makeText(this.getContext(), R.string.pasw_draw_shortorlong,
 						Toast.LENGTH_SHORT).show();
 			} else if (mCompleteListener != null) {
 				this.disableTouch();

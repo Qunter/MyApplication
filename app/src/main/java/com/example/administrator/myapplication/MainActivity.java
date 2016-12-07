@@ -8,8 +8,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.administrator.myapplication.password.save.SharedPreferencesHelper;
-import com.example.administrator.myapplication.password.ui.DrawPaswSetActivity;
-import com.example.administrator.myapplication.password.ui.NumPaswSetActivity;
+import com.example.administrator.myapplication.password.ui.DrawPaswActivity;
+import com.example.administrator.myapplication.password.ui.NumPaswActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button numPaswSetBtn,drawPaswSetBtn,numPaswVerifyBtn,drawPaswVerifyBtn,numPaswClearBtn,drawPaswClearBtn;
@@ -38,16 +38,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.numPaswSetBtn:
-                Intent numIt = new Intent(MainActivity.this, NumPaswSetActivity.class);
-                startActivity(numIt);
+                Intent numSetIt = new Intent(MainActivity.this, NumPaswActivity.class);
+                numSetIt.putExtra("setOrValidate",0);//判断是设置还是验证，0为设置1为验证
+                startActivity(numSetIt);
                 break;
             case R.id.drawPaswSetBtn:
-                Intent drawIt = new Intent(MainActivity.this, DrawPaswSetActivity.class);
-                startActivity(drawIt);
+                Intent drawSetIt = new Intent(MainActivity.this, DrawPaswActivity.class);
+                drawSetIt.putExtra("setOrValidate",0);//判断是设置还是验证，0为设置1为验证
+                startActivity(drawSetIt);
                 break;
             case R.id.numPaswVerifyBtn:
+                Intent numVerifyIt = new Intent(MainActivity.this,NumPaswActivity.class);
+                numVerifyIt.putExtra("setOrValidate",1);//判断是设置还是验证，0为设置1为验证
+                startActivity(numVerifyIt);
                 break;
             case R.id.drawPaswVerifyBtn:
+                Intent drawVerifyIt = new Intent(MainActivity.this, DrawPaswActivity.class);
+                drawVerifyIt.putExtra("setOrValidate",1);//判断是设置还是验证，0为设置1为验证
+                startActivity(drawVerifyIt);
                 break;
             case R.id.numPaswClearBtn:
                 String numpasw;

@@ -15,9 +15,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".password.ui.NumPaswSetActivity">
+        <activity android:name=".password.ui.NumPaswActivity">
         </activity>
-        <activity android:name=".password.ui.DrawPaswSetActivity">
+        <activity android:name=".password.ui.DrawPaswActivity">
         </activity>
     </application>
 

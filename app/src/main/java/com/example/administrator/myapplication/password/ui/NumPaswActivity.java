@@ -1,29 +1,25 @@
 package com.example.administrator.myapplication.password.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.administrator.myapplication.R;
 import com.example.administrator.myapplication.password.number.KeyboardUtil;
 import com.example.administrator.myapplication.password.number.PasswordTextView;
 import com.example.administrator.myapplication.password.save.SharedPreferencesHelper;
 
-/**
- * Created by Administrator on 2016/12/6.
- */
-
-public class NumPaswSetActivity extends Activity {
+public class NumPaswActivity extends Activity {
     private RelativeLayout rl_keyboard;
     private KeyboardUtil keyboardUtil;
     private int change_type;
-    private Button btn_showKey,btn_hideKey;
+    private TextView hintTv;
     private PasswordTextView et_pwd1,et_pwd2,et_pwd3,et_pwd4;
     private String password = "";
     private String passwordhc = "";
@@ -32,30 +28,37 @@ public class NumPaswSetActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_numpaswset);
-        initTestBtn();
+        initHintTv();
         initPwdTv();
         initKeyboard();
-        initListener();
+        Intent it = getIntent();
+        int index = it.getIntExtra("setOrValidate",2);
+        if(index==0){
+            initSetListener();
+        }else if (index==1){
+            SharedPreferencesHelper sph = SharedPreferencesHelper.getInstance(getApplicationContext());
+            password = sph.getString("numpasw","");
+            //判断是否未设置密码
+            if(password==""){
+                Toast.makeText(getApplicationContext(),R.string.pasw_null, Toast.LENGTH_SHORT).show();
+                NumPaswActivity.this.finish();
+            }else{
+                initVerifyListener();
+            }
+
+        }
+        showKeyBoard();
+    }
+    /**
+     * 初始化提示textview
+     */
+    private void initHintTv(){
+        hintTv = (TextView) findViewById(R.id.numPaswHintTv);
     }
 
-    private void initTestBtn() {
-        btn_showKey = (Button) findViewById(R.id.btn_showKey);
-        btn_hideKey = (Button) findViewById(R.id.btn_hideKey);
-        btn_showKey.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                showKeyBoard();
-            }
-        });
-        btn_hideKey.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                hideKeyBoard();
-            }
-        });
-    }
+    /**
+     * 初始化自定义密码输入框
+     */
     private void initPwdTv(){
         et_pwd1 = (PasswordTextView) findViewById(R.id.et_pwd1);
         et_pwd2 = (PasswordTextView) findViewById(R.id.et_pwd2);
@@ -63,7 +66,9 @@ public class NumPaswSetActivity extends Activity {
         et_pwd4 = (PasswordTextView) findViewById(R.id.et_pwd4);
     }
 
-
+    /**
+     * 初始化键盘
+     */
     private void initKeyboard() {
         keyboardUtil = new KeyboardUtil(this,et_pwd1,et_pwd2,et_pwd3,et_pwd4);
         rl_keyboard = (RelativeLayout) findViewById(R.id.rl__keyboard);
@@ -86,28 +91,34 @@ public class NumPaswSetActivity extends Activity {
     }
 
     /**
-     * 显示键盘
+     * 隐藏键盘
      */
     protected void hideKeyBoard() {
         rl_keyboard.setVisibility(View.GONE);
         keyboardUtil.hideKeyboard();
         keyboardUtil.setType(-1);
     }
-
+    /**
+     * 修改按键事件
+     * back键事件重写，按back时直接关闭布局
+     * 如不重写则会先关闭键盘再关闭布局
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (rl_keyboard.getVisibility() != View.GONE) {
-                hideKeyBoard();
+                //hideKeyBoard();
+                NumPaswActivity.this.finish();
                 return true;
             }
         }
         return super.onKeyDown(keyCode, event);
     }
-    /*
-    监听第四个tv的更改事件，如果第四个更改，则保存密码
+    /**
+     * 设置界面的监听事件
+     * 监听第四个tv的更改事件，如果第四个更改，则保存密码
      */
-    private void initListener() {
+    private void initSetListener() {
         //监听最后一个密码框的文本改变事件回调
         et_pwd4.setOnTextChangedListener(new PasswordTextView.OnTextChangedListener() {
             @Override
@@ -118,6 +129,7 @@ public class NumPaswSetActivity extends Activity {
                     password += et_pwd3.getTextContent();
                     password += et_pwd4.getTextContent();
                     clearText();
+                    hintTv.setText(R.string.pasw_hint_again);
                 }else{
                     passwordhc += et_pwd1.getTextContent();
                     passwordhc += et_pwd2.getTextContent();
@@ -127,11 +139,39 @@ public class NumPaswSetActivity extends Activity {
                         SharedPreferencesHelper sph = SharedPreferencesHelper.getInstance(getApplicationContext());
                         sph.putString("numpasw", password);
                         Toast.makeText(getApplicationContext(),"密码设置成功",Toast.LENGTH_SHORT).show();
-                        NumPaswSetActivity.this.finish();
+                        NumPaswActivity.this.finish();
                     }else{
-                        Toast.makeText(getApplicationContext(),"两次输入不一致  请重新输入",Toast.LENGTH_SHORT).show();
                         clearText();
+                        hintTv.setText(R.string.pasw_hint_error);
                         clearPsw();
+                        clearPswhc();
+                    }
+                }
+                startTimer();
+            }
+        });
+    }
+    /**
+     * 验证界面的监听事件
+     * 监听第四个tv的更改事件，如果第四个更改，则保存密码
+     */
+    private void initVerifyListener() {
+        //监听最后一个密码框的文本改变事件回调
+        et_pwd4.setOnTextChangedListener(new PasswordTextView.OnTextChangedListener() {
+            @Override
+            public void textChanged(String content) {
+                if(password.equals("")){
+                }else {
+                    passwordhc += et_pwd1.getTextContent();
+                    passwordhc += et_pwd2.getTextContent();
+                    passwordhc += et_pwd3.getTextContent();
+                    passwordhc += et_pwd4.getTextContent();
+                    if (password.equals(passwordhc)) {
+                        Toast.makeText(getApplicationContext(), "密码验证成功", Toast.LENGTH_SHORT).show();
+                        NumPaswActivity.this.finish();
+                    } else {
+                        clearText();
+                        hintTv.setText(R.string.pasw_verify_error);
                         clearPswhc();
                     }
                 }

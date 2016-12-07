@@ -2,25 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/numPaswHintTv"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
-        <Button
-            android:id="@+id/btn_showKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="show"
-            />
-        <Button
-            android:id="@+id/btn_hideKey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/btn_showKey"
-            android:text="hide"
-            />
-
-    </LinearLayout>
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        android:text="@string/pasw_hint"/>
 
     <!-- 密码显示框 -->
     <LinearLayout
